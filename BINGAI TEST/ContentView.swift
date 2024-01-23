@@ -8,14 +8,57 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var tiles = Array(1...8) + [0]
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            ForEach(0..<3) { row in
+                HStack {
+                    ForEach(0..<3) { col in
+                        Button(action: {
+                            self.moveTile(at: self.index(forRow: row, col: col))
+                        }) {
+                            if self.tiles[self.index(forRow: row, col: col)] != 0 {
+                                Text("\(self.tiles[self.index(forRow: row, col: col)])")
+                                    .frame(width: 80, height: 80)
+                                    .background(Color.blue)
+                                    .foregroundColor(.white)
+                                    .font(.largeTitle)
+                                    .cornerRadius(10)
+                            } else {
+                                Text("")
+                                    .frame(width: 80, height: 80)
+                            }
+                        }
+                    }
+                }
+            }
+            Button("Shuffle") {
+                shuffleTiles()
+            }
         }
-        .padding()
+        .onAppear() {
+            shuffleTiles()
+        }
+    }
+    
+    func index(forRow row: Int, col: Int) -> Int {
+        return row * 3 + col
+    }
+    
+    func moveTile(at index: Int) {
+        let offsets = [-1, 1, -3, 3]
+        for offset in offsets {
+            let neighborIndex = index + offset
+            if neighborIndex >= 0 && neighborIndex < 9 && tiles[neighborIndex] == 0 {
+                tiles.swapAt(index, neighborIndex)
+                return
+            }
+        }
+    }
+    
+    func shuffleTiles() {
+        tiles.shuffle()
     }
 }
 
