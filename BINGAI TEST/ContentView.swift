@@ -49,14 +49,27 @@ struct ContentView: View {
     
     func moveTile(at index: Int) {
         let offsets = [-1, 1, -3, 3]
+        let invalidLeftIndices = [0, 3, 6]
+        let invalidRightIndices = [2, 5, 8]
+
         for offset in offsets {
             let neighborIndex = index + offset
+
             if neighborIndex >= 0 && neighborIndex < 9 && tiles[neighborIndex] == 0 {
+                // Prevent a tile from wrapping from the left side to the right side
+                if offset == -1 && invalidLeftIndices.contains(index) {
+                    continue
+                }
+                // Prevent a tile from wrapping from the right side to the left side
+                if offset == 1 && invalidRightIndices.contains(index) {
+                    continue
+                }
                 tiles.swapAt(index, neighborIndex)
                 return
             }
         }
     }
+
     
     private func shuffleAndCheckPuzzle() {
         repeat {
