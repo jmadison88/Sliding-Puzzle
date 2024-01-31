@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 struct ContentView: View {
     @State private var tiles = Array(1...8) + [0]
@@ -34,11 +35,11 @@ struct ContentView: View {
                 }
             }
             Button("Shuffle") {
-                shuffleTiles()
+                shuffleAndCheckPuzzle()
             }
         }
         .onAppear() {
-            shuffleTiles()
+            shuffleAndCheckPuzzle()
         }
     }
     
@@ -57,8 +58,28 @@ struct ContentView: View {
         }
     }
     
-    func shuffleTiles() {
-        tiles.shuffle()
+    private func shuffleAndCheckPuzzle() {
+        repeat {
+            tiles.shuffle()
+        } while !isSolvable(tiles: tiles)
+    }
+    
+    private func isSolvable(tiles: [Int]) -> Bool {
+        let inversions = countInversions(tiles: tiles)
+        let blankOnEvenRowFromBottom = (tiles.firstIndex(of: 0)! / 3) % 2 != 0
+        return (inversions % 2 != 0) == blankOnEvenRowFromBottom
+    }
+    
+    private func countInversions(tiles: [Int]) -> Int {
+        var inversions = 0
+        for i in 0..<tiles.count {
+            for j in (i + 1)..<tiles.count {
+                if tiles[i] != 0 && tiles[j] != 0 && tiles[i] > tiles[j] {
+                    inversions += 1
+                }
+            }
+        }
+        return inversions
     }
 }
 
