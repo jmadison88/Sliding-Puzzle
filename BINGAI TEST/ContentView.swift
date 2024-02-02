@@ -74,13 +74,13 @@ struct ContentView: View {
             tiles.shuffle()
         } while !isSolvable(tiles: tiles)
     }
-    
+
     private func isSolvable(tiles: [Int]) -> Bool {
         let inversions = countInversions(tiles: tiles)
-        let blankOnEvenRowFromBottom = (tiles.firstIndex(of: 0)! / 3) % 2 != 0
-        return (inversions % 2 != 0) == blankOnEvenRowFromBottom
+        let blankOnOddRowFromBottom = ((tiles.count - tiles.firstIndex(of: 0)!) / 3) % 2 == 1
+        return (inversions % 2 == 0) != blankOnOddRowFromBottom
     }
-    
+
     private func countInversions(tiles: [Int]) -> Int {
         var inversions = 0
         for i in 0..<tiles.count {
