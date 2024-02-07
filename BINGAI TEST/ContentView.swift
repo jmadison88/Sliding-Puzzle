@@ -10,7 +10,6 @@ import Foundation
 
 struct ContentView: View {
     @State private var tiles = Array(1...8) + [0]
-    
     var body: some View {
         VStack {
             ForEach(0..<3) { row in
@@ -49,12 +48,10 @@ struct ContentView: View {
     
     func moveTile(at index: Int) {
         let offsets = [-1, 1, -3, 3]
-        let invalidLeftIndices = [0, 3, 6]
+        let invalidLeftIndices = [0, 3, 6] //ensures the puzzle does not wrap and moves tile incorrectly
         let invalidRightIndices = [2, 5, 8]
-        
         for offset in offsets {
             let neighborIndex = index + offset
-            
             if neighborIndex >= 0 && neighborIndex < 9 && tiles[neighborIndex] == 0 {
                 if offset == -1 && invalidLeftIndices.contains(index) {
                     continue
@@ -68,8 +65,7 @@ struct ContentView: View {
         }
     }
     
-    
-    private func shuffleAndCheckPuzzle() {
+    private func shuffleAndCheckPuzzle() { //repeats tiles.shuffle until isSolvable is true
         repeat {
             tiles.shuffle()
         } while !isSolvable(tiles: tiles)
@@ -77,21 +73,36 @@ struct ContentView: View {
 
     private func isSolvable(tiles: [Int]) -> Bool {
         let inversions = countInversions(tiles: tiles)
-        let blankOnOddRowFromBottom = ((tiles.count - tiles.firstIndex(of: 0)!) / 3) % 2 == 1
+        
+        // find row position of blank tile
+        let blankIndex = tiles.firstIndex(of: 0)!
+        let rowNumber = (tiles.count - blankIndex) / 3
+        
+        // determines if blank tile is on an odd row from bottom (ensures the puzzle is solvable)
+        let blankOnOddRowFromBottom = rowNumber % 2 == 1
+        
         return (inversions % 2 == 0) != blankOnOddRowFromBottom
     }
 
-    private func countInversions(tiles: [Int]) -> Int {
+
+    private func countInversions(tiles: [Int]) -> Int { //counts the number of inversions by iterating through an array
         var inversions = 0
         for i in 0..<tiles.count {
+            if tiles[i] == 0 {
+                continue // Skip the blank tile
+            }
             for j in (i + 1)..<tiles.count {
-                if tiles[i] != 0 && tiles[j] != 0 && tiles[i] > tiles[j] {
+                if tiles[j] == 0 {
+                    continue // Skip the blank tile
+                }
+                if tiles[i] > tiles[j] {
                     inversions += 1
                 }
             }
         }
         return inversions
     }
+
 }
 
 struct ContentView_Previews: PreviewProvider {
