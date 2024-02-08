@@ -70,7 +70,7 @@ struct ContentView: View {
             tiles.shuffle()
         } while !isSolvable(tiles: tiles)
     }
-
+    
     private func isSolvable(tiles: [Int]) -> Bool {
         let inversions = countInversions(tiles: tiles)
         
@@ -83,9 +83,9 @@ struct ContentView: View {
         
         return (inversions % 2 == 0) != blankOnOddRowFromBottom
     }
-
-
-    private func countInversions(tiles: [Int]) -> Int { //counts the number of inversions by iterating through an array
+    
+    
+    private func countInversions(tiles: [Int]) -> Int {
         var inversions = 0
         for i in 0..<tiles.count {
             if tiles[i] == 0 {
@@ -97,16 +97,18 @@ struct ContentView: View {
                 }
                 if tiles[i] > tiles[j] {
                     inversions += 1
+                } else if tiles[i] == tiles[j] {
+                    // handle duplicate values
+                    // skip or ignore this case
                 }
             }
         }
         return inversions
     }
-
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+    
+    struct ContentView_Previews: PreviewProvider {
+        static var previews: some View {
+            ContentView()
+        }
     }
 }
